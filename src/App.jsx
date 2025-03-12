@@ -8,6 +8,9 @@ const socket = io("http://localhost:5000/");
 function App() {
 
   const [ text , settext ] = useState("");
+  const [ messges , setmessages ] = useState([]);
+  /// store message , get this message from board cast user 
+
 
 
 
@@ -32,6 +35,7 @@ function App() {
     };
 
   },[]);
+  console.log(messges);
 
 
   // sendMessage
@@ -41,6 +45,7 @@ function App() {
     // here fetch text 
     // chat
     socket.emit('chat',text);
+    settext(" ");
 
 
 
@@ -48,6 +53,16 @@ function App() {
 
 
   }
+
+      //  this is borad cast message get everyone 
+      socket.on('chat',(msg)=>{
+        console.log("broad cast ",msg);
+        setmessages((prev)=> [...prev,msg]);
+    
+      })
+    
+  
+
 
 
 
@@ -66,6 +81,18 @@ function App() {
 
 
       </section>
+
+      {/* this section show message */}
+
+      <section>
+        {
+          messges.map((msg,key)=>(
+            <li>{msg}</li>
+          ))
+        }
+      </section>
+
+
     </div>
   );
 }
