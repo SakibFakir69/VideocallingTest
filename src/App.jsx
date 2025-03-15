@@ -34,9 +34,9 @@ function App() {
     })
     // servermessage
 
-    socket.on('servermessage',(msg,id)=>{
+    socket.on('servermessage',({msg,id})=>{
       console.log(msg ," df",id);
-      setchat((prev)=> [...prev,msg]);
+      setchat((prev)=> [...prev,{msg,id}]);
     })
 
 
@@ -44,6 +44,7 @@ function App() {
 
     return ()=>{
       socket.disconnect();
+      socket.off('servermessage')
     }
 
 
@@ -60,7 +61,14 @@ function App() {
   const sendMessage= (event)=>{
     event.preventDefault();
 
+    if(message.trim()==='')
+    {
+      alert('Enter your msg ');
+      return ;
+    }
+
     socket.emit('message',{msg:message,id:socketid});
+    setmessage(' ');
 
 
   }
@@ -98,21 +106,31 @@ function App() {
 
               <input type='text' placeholder='Enter your message' value={message} onChange={(e)=> setmessage(e.target.value)}/>
 
-              <button type='submit'>Send</button>
+              <button type='submit' className='px-8 py-2 border'>Send</button>
             </form>
           </section>
 
           <section>
            
            {
-            chat.map((msg,key)=>(
+            chat.map(({msg,id},key)=>(
+
+              <div key={key} className='border p-5'>
+
               
-              <div key={key}>
-                <p className='bg-red-600'>{msg}</p>
+
+                {
+                  id===socket.id  ?    <p className='bg-red-500 flex justify-end'>{msg}  {id}  </p> :
+
+                  <p className='text-green-400 flex justify-start'>{msg} {id}</p>
+                }
 
               </div>
+
             ))
            }
+
+
           </section>
 
         </div>
